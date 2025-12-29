@@ -4,10 +4,12 @@ import { exec } from "child_process";
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Rota principal
 app.get("/", (req, res) => {
   res.json({ status: "API yt-dlp online" });
 });
 
+// Rota de download
 app.get("/download", (req, res) => {
   const { url, type } = req.query;
 
@@ -15,18 +17,28 @@ app.get("/download", (req, res) => {
     return res.status(400).json({ error: "URL obrigatória" });
   }
 
-  const format =
+  // Define o comando yt-dlp
+  const cmd =
     type === "mp3"
-      ? "-x --audio-format mp3"
-      : "-f best";
+      ? `yt-dlp -x --audio-format mp3 -g "${url}"`
+      : `yt-dlp -f "bv*+ba/b" -g "${url}"`;
 
-  const cmd = `yt-dlp ${format} -g "${url}"`;
-
-  exec(cmd, (err, stdout) => {
+  exec(cmd, (err, stdout, stderr) => {
     if (err) {
-      return res.status(500).json({ error: "Falha ao processar vídeo" });
+      return res.status(500).json({
+        error: "yt-dlp falhou",
+        details: stderr || err.message
+      });
     }
 
+    if (!stdout.trim()) {
+      return res.status(500).json({
+        error: "Nenhum link retornado",
+        details: stderr
+      });
+    }
+
+    // Se der certo
     res.json({
       success: true,
       download_url: stdout.trim()
@@ -35,5 +47,5 @@ app.get("/download", (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log("API rodando na porta " + PORT);
+  console.log(`API rodando na porta ${PORT}`);
 });
