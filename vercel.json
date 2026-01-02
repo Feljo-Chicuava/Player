@@ -1,18 +1,22 @@
 {
   "functions": {
     "api/index.js": {
-      "maxDuration": 10,
+      "maxDuration": 8,
       "memory": 1024,
-      "runtime": "nodejs14.x"
+      "runtime": "nodejs20.x"
     }
   },
   "rewrites": [
     {
-      "source": "/(\\d+)",
+      "source": "/:id(\\d+)",
       "destination": "/api/index.js"
     },
     {
       "source": "/",
+      "destination": "/api/index.js"
+    },
+    {
+      "source": "/api/:path*",
       "destination": "/api/index.js"
     }
   ],
@@ -26,11 +30,11 @@
         },
         {
           "key": "Access-Control-Allow-Methods",
-          "value": "GET, POST, OPTIONS"
+          "value": "GET, POST, OPTIONS, HEAD"
         },
         {
           "key": "Access-Control-Allow-Headers",
-          "value": "Origin, X-Requested-With, Content-Type, Accept"
+          "value": "Origin, X-Requested-With, Content-Type, Accept, User-Agent"
         },
         {
           "key": "X-Frame-Options",
@@ -38,7 +42,7 @@
         },
         {
           "key": "Cache-Control",
-          "value": "no-cache, no-store, must-revalidate"
+          "value": "no-cache, no-store, must-revalidate, max-age=0"
         },
         {
           "key": "Pragma",
@@ -49,8 +53,16 @@
           "value": "0"
         },
         {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "no-referrer-when-downgrade"
+        },
+        {
           "key": "X-Powered-By",
-          "value": "Fimoo Proxy"
+          "value": "Fimoo-Proxy/2.0"
         }
       ]
     }
@@ -58,6 +70,10 @@
   "env": {
     "NODE_ENV": "production"
   },
-  "regions": ["gru1"],
-  "public": false
-}
+  "regions": ["iad1"],
+  "github": {
+    "enabled": true,
+    "silent": false
+  },
+  "installCommand": "npm install --legacy-peer-deps"
+    }
