@@ -1,8 +1,0 @@
-[build]
-  publish = "public"
-  functions = "netlify/functions"
-
-[[redirects]]
-  from = "/id/:id"
-  to = "/.netlify/functions/player?id=:id"
-  status = 200
